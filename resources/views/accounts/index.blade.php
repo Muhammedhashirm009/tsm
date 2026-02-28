@@ -6,7 +6,9 @@
         <h1><i data-feather="credit-card" style="width:24px;height:24px;"></i> Accounts</h1>
         <p>Manage cash, bank & other accounts</p>
     </div>
+    @if(Auth::user()->canEdit())
     <a href="{{ route('accounts.create') }}" class="btn btn-primary"><i data-feather="plus"></i> New Account</a>
+    @endif
 </div>
 <div class="data-list animate-in" style="animation-delay:0.05s;">
     @forelse($accounts as $account)
@@ -21,12 +23,14 @@
                     <span>Balance: <strong class="{{ $account->balance >= 0 ? 'text-income' : 'text-expense' }}">₹{{ number_format($account->balance, 2) }}</strong></span>
                 </div>
             </div>
+            @if(Auth::user()->canEdit())
             <div class="data-item-actions">
                 <a href="{{ route('accounts.edit', $account) }}" class="btn btn-ghost btn-icon"><i data-feather="edit-2" style="width:16px;height:16px;"></i></a>
                 <form action="{{ route('accounts.destroy', $account) }}" method="POST" onsubmit="return confirm('Delete this account?');">@csrf @method('DELETE')
                     <button type="submit" class="btn btn-ghost btn-icon" style="color:var(--expense);"><i data-feather="trash-2" style="width:16px;height:16px;"></i></button>
                 </form>
             </div>
+            @endif
         </div>
     @empty
         <div class="card">
@@ -34,7 +38,9 @@
                 <div class="empty-state-icon"><i data-feather="credit-card"></i></div>
                 <h4>No accounts yet</h4>
                 <p class="text-sm text-tertiary mt-1">Add a cash or bank account to track balances.</p>
+                @if(Auth::user()->canEdit())
                 <a href="{{ route('accounts.create') }}" class="btn btn-primary mt-3"><i data-feather="plus"></i> Add Account</a>
+                @endif
             </div>
         </div>
     @endforelse

@@ -38,12 +38,14 @@
                 </div>
             </div>
             <div class="transaction-amount text-income">+₹{{ number_format($receipt->amount, 2) }}</div>
+            @if(Auth::user()->canEdit())
             <div class="transaction-actions">
                 <a href="{{ route('receipts.edit', $receipt) }}" class="btn btn-ghost btn-icon"><i data-feather="edit-2" style="width:15px;height:15px;"></i></a>
                 <form action="{{ route('receipts.destroy', $receipt) }}" method="POST" onsubmit="return confirm('Delete this receipt?');">@csrf @method('DELETE')
                     <button type="submit" class="btn btn-ghost btn-icon" style="color:var(--expense);"><i data-feather="trash-2" style="width:15px;height:15px;"></i></button>
                 </form>
             </div>
+            @endif
         </div>
     @empty
         <div class="card">

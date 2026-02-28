@@ -51,7 +51,9 @@
                 <div class="empty-state-icon" style="background:var(--debt-bg);color:var(--debt);"><i data-feather="users"></i></div>
                 <h4>No creditors yet</h4>
                 <p class="text-sm text-tertiary mt-1">Creditors are created automatically when you record a debt.</p>
+                @if(Auth::user()->canManageDebts())
                 <a href="{{ route('debts.create') }}" class="btn btn-primary mt-3"><i data-feather="plus"></i> Record a Debt</a>
+                @endif
             </div>
         </div>
     @endforelse

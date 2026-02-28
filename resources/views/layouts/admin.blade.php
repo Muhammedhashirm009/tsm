@@ -28,11 +28,16 @@
 
             <div class="sidebar-section-title">Transactions</div>
             <nav style="display:flex;flex-direction:column;">
+                @if(Auth::user()->canViewFinance())
                 <a href="{{ route('transactions.index') }}" class="desktop-nav-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}"><i data-feather="list"></i> All Transactions</a>
+                @endif
                 <a href="{{ route('receipts.index') }}" class="desktop-nav-item {{ request()->routeIs('receipts.*') ? 'active' : '' }}"><i data-feather="arrow-down-left"></i> Income</a>
+                @if(Auth::user()->canViewFinance())
                 <a href="{{ route('vouchers.index') }}" class="desktop-nav-item {{ request()->routeIs('vouchers.*') ? 'active' : '' }}"><i data-feather="arrow-up-right"></i> Expense</a>
+                @endif
             </nav>
 
+            @if(Auth::user()->canViewFinance())
             <div class="sidebar-section-title">Finance</div>
             <nav style="display:flex;flex-direction:column;">
                 <a href="{{ route('accounts.index') }}" class="desktop-nav-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}"><i data-feather="credit-card"></i> Accounts</a>
@@ -43,15 +48,25 @@
             <div class="sidebar-section-title">Setup</div>
             <nav style="display:flex;flex-direction:column;">
                 <a href="{{ route('books.index') }}" class="desktop-nav-item {{ request()->routeIs('books.*') ? 'active' : '' }}"><i data-feather="book-open"></i> Books</a>
+                @if(Auth::user()->canEdit())
                 <a href="{{ route('categories.index') }}" class="desktop-nav-item {{ request()->routeIs('categories.*') ? 'active' : '' }}"><i data-feather="grid"></i> Categories</a>
+                @endif
             </nav>
+            @endif
+
+            @if(Auth::user()->isAdmin())
+            <div class="sidebar-section-title">Admin</div>
+            <nav style="display:flex;flex-direction:column;">
+                <a href="{{ route('users.index') }}" class="desktop-nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}"><i data-feather="shield"></i> Users</a>
+            </nav>
+            @endif
 
             <div style="margin-top:auto;padding-top:1rem;">
                 <div style="padding:0.65rem;background:var(--bg-body);border-radius:var(--radius-md);display:flex;align-items:center;gap:0.65rem;margin-bottom:0.65rem;">
                     <div style="width:30px;height:30px;border-radius:var(--radius-sm);background:var(--accent-bg);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i data-feather="user" style="width:14px;height:14px;"></i></div>
                     <div style="flex:1;min-width:0;">
                         <div style="font-weight:600;font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ Auth::user()->name }}</div>
-                        <div style="font-size:0.65rem;color:var(--text-tertiary);">{{ Auth::user()->email }}</div>
+                        <div style="font-size:0.65rem;color:var(--text-tertiary);">{{ Auth::user()->role_label }}</div>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="btn btn-secondary w-full"><i data-feather="log-out"></i> Sign Out</button></form>

@@ -6,7 +6,9 @@
         <h1><i data-feather="arrow-up-right" style="width:24px;height:24px;color:var(--expense);"></i> Expenses</h1>
         <p>All vouchers & outgoing payments</p>
     </div>
+    @if(Auth::user()->canAddExpenses())
     <a href="{{ route('vouchers.create') }}" class="btn btn-primary"><i data-feather="plus"></i> New Voucher</a>
+    @endif
 </div>
 
 {{-- Search bar --}}
@@ -38,12 +40,14 @@
                 </div>
             </div>
             <div class="transaction-amount text-expense">−₹{{ number_format($voucher->amount, 2) }}</div>
+            @if(Auth::user()->canEdit())
             <div class="transaction-actions">
                 <a href="{{ route('vouchers.edit', $voucher) }}" class="btn btn-ghost btn-icon"><i data-feather="edit-2" style="width:15px;height:15px;"></i></a>
                 <form action="{{ route('vouchers.destroy', $voucher) }}" method="POST" onsubmit="return confirm('Delete this voucher?');">@csrf @method('DELETE')
                     <button type="submit" class="btn btn-ghost btn-icon" style="color:var(--expense);"><i data-feather="trash-2" style="width:15px;height:15px;"></i></button>
                 </form>
             </div>
+            @endif
         </div>
     @empty
         <div class="card">
@@ -51,7 +55,9 @@
                 <div class="empty-state-icon" style="background:var(--expense-bg);color:var(--expense);"><i data-feather="arrow-up-right"></i></div>
                 <h4>No vouchers recorded</h4>
                 <p class="text-sm text-tertiary mt-1">Start by adding your first expense entry.</p>
+                @if(Auth::user()->canAddExpenses())
                 <a href="{{ route('vouchers.create') }}" class="btn btn-primary mt-3"><i data-feather="plus"></i> Add Voucher</a>
+                @endif
             </div>
         </div>
     @endforelse
