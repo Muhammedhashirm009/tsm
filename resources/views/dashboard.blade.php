@@ -1,6 +1,47 @@
 @extends('layouts.admin')
 @section('title', 'Dashboard')
 @section('content')
+@if(Auth::user()->isCollector())
+{{-- Collector Dashboard --}}
+<div class="stats-grid animate-in" style="grid-template-columns:repeat(2,1fr);">
+    <div class="stat-card income">
+        <div class="stat-icon income"><i data-feather="arrow-down-left"></i></div>
+        <div class="stat-label">My Collections (Today)</div>
+        <div class="stat-value text-income">₹{{ number_format($myTodayCollected, 2) }}</div>
+    </div>
+    <div class="stat-card balance">
+        <div class="stat-icon balance"><i data-feather="briefcase"></i></div>
+        <div class="stat-label">My Total Collections</div>
+        <div class="stat-value">₹{{ number_format($myTotalCollected, 2) }}</div>
+    </div>
+</div>
+
+<div class="card mt-4 animate-in" style="animation-delay:0.1s;">
+    <div class="card-header">
+        <h3 class="section-title"><i data-feather="clock" style="width:16px;height:16px;color:var(--text-secondary);"></i> My Recent Receipts</h3>
+        <a href="{{ route('receipts.create') }}" class="btn btn-primary btn-sm"><i data-feather="plus"></i> Add Receipt</a>
+    </div>
+    <div class="transaction-list">
+        @forelse($recentReceipts as $receipt)
+            <div class="transaction-item">
+                <div class="transaction-icon income"><i data-feather="arrow-down-left"></i></div>
+                <div class="transaction-details">
+                    <div class="transaction-title">{{ $receipt->category->name ?? '—' }}</div>
+                    <div class="transaction-meta">
+                        <span class="transaction-meta-item"><i data-feather="calendar"></i> {{ \Carbon\Carbon::parse($receipt->date)->format('d M') }}</span>
+                        @if($receipt->account)<span class="badge badge-{{ $receipt->account->type }}" style="font-size:0.55rem;padding:0.1rem 0.35rem;">{{ $receipt->account->name }}</span>@endif
+                    </div>
+                </div>
+                <div class="transaction-amount text-income">+₹{{ number_format($receipt->amount, 2) }}</div>
+            </div>
+        @empty
+            <div class="empty-state" style="padding:1.25rem;"><p class="text-sm text-tertiary">You haven't added any receipts yet.</p></div>
+        @endforelse
+    </div>
+</div>
+
+@else
+{{-- Full Dashboard (Admin, President, Secretary) --}}
 <div class="stats-grid animate-in">
     <div class="stat-card income">
         <div class="stat-icon income"><i data-feather="arrow-down-left"></i></div>
@@ -101,4 +142,5 @@
         @endif
     </div>
 </div>
+@endif
 @endsection
