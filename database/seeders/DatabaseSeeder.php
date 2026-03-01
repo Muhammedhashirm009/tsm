@@ -15,11 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create the admin user if they don't exist
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'), // Change this after logging in
+                'role' => User::ROLE_ADMIN, // Ensure the database column matches the admin role
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Check if the spatie permission package role exists, and assign it
+        if (class_exists(\Spatie\Permission\Models\Role::class)) {
+            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Admin']);
+            $admin->assignRole($role);
+        }
     }
 }

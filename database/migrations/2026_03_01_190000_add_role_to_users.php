@@ -11,9 +11,6 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('role')->default('collector')->after('email');
         });
-
-        // Set existing users to admin
-        DB::table('users')->update(['role' => 'admin']);
     }
 
     public function down(): void
