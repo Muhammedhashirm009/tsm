@@ -29,11 +29,11 @@ class DebtController extends Controller
     {
         $validated = $request->validate([
             'creditor_name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01|max:99999999',
             'date' => 'required|date',
             'type' => 'required|in:borrowed',
             'account_id' => 'required|exists:accounts,id',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         // Find or create creditor
@@ -67,12 +67,12 @@ class DebtController extends Controller
     public function update(Request $request, Debt $debt)
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01|max:99999999',
             'date' => 'required|date',
             'type' => 'required|in:borrowed',
             'account_id' => 'required|exists:accounts,id',
-            'paid_amount' => 'nullable|numeric|min:0',
-            'description' => 'nullable|string',
+            'paid_amount' => 'nullable|numeric|min:0|max:99999999',
+            'description' => 'nullable|string|max:1000',
         ]);
         $paidAmount = $validated['paid_amount'] ?? 0;
         if ($paidAmount >= $validated['amount']) {

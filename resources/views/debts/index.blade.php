@@ -6,7 +6,9 @@
         <h1><i data-feather="repeat" style="width:24px;height:24px;"></i> Debts</h1>
         <p>Track borrowed money & repayments</p>
     </div>
+    @if(Auth::user()->canManageDebts())
     <a href="{{ route('debts.create') }}" class="btn btn-primary"><i data-feather="plus"></i> New Debt</a>
+    @endif
 </div>
 
 @if($totalOutstanding > 0)
@@ -40,6 +42,7 @@
                 <div class="font-bold text-debt" style="font-size:1rem;">₹{{ number_format($debt->amount, 2) }}</div>
                 @if($debt->paid_amount > 0)<div class="text-xs text-income">Paid: ₹{{ number_format($debt->paid_amount, 2) }}</div>@endif
             </div>
+            @if(Auth::user()->canManageDebts())
             <div class="data-item-actions">
                 @if($debt->status !== 'paid')
                     <a href="{{ route('debts.repay', $debt) }}" class="btn btn-sm" style="background:var(--income);color:white;font-size:0.7rem;padding:0.25rem 0.5rem;border-radius:var(--radius-sm);"><i data-feather="check-circle" style="width:13px;height:13px;"></i> Repay</a>
@@ -49,6 +52,7 @@
                     <button type="submit" class="btn btn-ghost btn-icon" style="color:var(--expense);"><i data-feather="trash-2" style="width:16px;height:16px;"></i></button>
                 </form>
             </div>
+            @endif
         </div>
     @empty
         <div class="card">

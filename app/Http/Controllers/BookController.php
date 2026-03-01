@@ -9,16 +9,18 @@ class BookController extends Controller
 {
     public function index()
     {
-        $books = Book::withCount('receipts', 'vouchers')->get();
+        $books = Book::withCount('receipts', 'vouchers', 'mahalDonations')->get();
         return view('books.index', compact('books'));
     }
 
     public function show(Book $book)
     {
-        $book->loadCount('receipts');
+        $book->loadCount('receipts', 'mahalDonations');
         $receipts = $book->receipts()->with(['category', 'account', 'creator'])->latest()->get();
-        $totalIncome = $receipts->sum('amount');
-        return view('books.show', compact('book', 'receipts', 'totalIncome'));
+        $mahalDonations = $book->mahalDonations()->with(['home', 'account', 'creator'])->latest()->get();
+        $totalIncome = $receipts->sum('amount') + $mahalDonations->sum('amount');
+        $totalReceiptsCount = $receipts->count() + $mahalDonations->count();
+        return view('books.show', compact('book', 'receipts', 'mahalDonations', 'totalIncome', 'totalReceiptsCount'));
     }
 
     public function create()

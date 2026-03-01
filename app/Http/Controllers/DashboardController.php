@@ -8,12 +8,36 @@ use App\Models\Account;
 use App\Models\Receipt;
 use App\Models\Voucher;
 use App\Models\Debt;
+use App\Models\MahalDonation;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $totalIncome = Receipt::sum('amount');
+        $user = auth()->user();
+
+        if ($user->isCollector()) {
+            // Collector view: only show receipts added by them today/recently
+            $recentReceipts = Receipt::with(['book', 'category', 'account'])
+                                ->where('created_by', $user->id)
+                                ->latest()
+                                ->take(10)
+                                ->get();
+
+            $myTotalCollected = Receipt::where('created_by', $user->id)->sum('amount')
+                              + MahalDonation::where('created_by', $user->id)->sum('amount');
+            $myTodayCollected = Receipt::where('created_by', $user->id)
+                                    ->whereDate('created_at', \Carbon\Carbon::today())
+                                    ->sum('amount')
+                              + MahalDonation::where('created_by', $user->id)
+                                    ->whereDate('created_at', \Carbon\Carbon::today())
+                                    ->sum('amount');
+
+            return view('dashboard', compact('recentReceipts', 'myTotalCollected', 'myTodayCollected'));
+        }
+
+        // Full view for Admins, Secretaries, Presidents
+        $totalIncome = Receipt::sum('amount') + MahalDonation::sum('amount');
         $totalExpense = Voucher::sum('amount');
         $balance = $totalIncome - $totalExpense;
 

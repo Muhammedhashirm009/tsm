@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Receipt extends Model
 {
+    use SoftDeletes;
     protected $fillable = ['receipt_no', 'book_id', 'category_id', 'account_id', 'amount', 'date', 'received_from', 'payment_method', 'description', 'created_by'];
 
     public function book()

@@ -18,6 +18,11 @@ class Account extends Model
         return $this->hasMany(Voucher::class);
     }
 
+    public function mahalDonations()
+    {
+        return $this->hasMany(MahalDonation::class);
+    }
+
     public function debts()
     {
         return $this->hasMany(Debt::class);
@@ -25,7 +30,7 @@ class Account extends Model
 
     public function getBalanceAttribute()
     {
-        $income = $this->receipts()->sum('amount');
+        $income = $this->receipts()->sum('amount') + $this->mahalDonations()->sum('amount');
         $expense = $this->vouchers()->sum('amount');
         // Borrowed debt credits the account, repayments (paid_amount) debit it
         $debtBorrowed = $this->debts()->where('type', 'borrowed')->sum('amount');
@@ -35,7 +40,7 @@ class Account extends Model
 
     public function getTotalIncomeAttribute()
     {
-        return $this->receipts()->sum('amount');
+        return $this->receipts()->sum('amount') + $this->mahalDonations()->sum('amount');
     }
 
     public function getTotalExpenseAttribute()

@@ -51,9 +51,7 @@
                 </button>
             </form>
 
-            <div class="auth-footer">
-                Don't have an account? <a href="{{ route('register') }}">Create one</a>
-            </div>
+            {{-- Registration is disabled; only admins can create users --}}
         </div>
     </div>
     <script>feather.replace();</script>

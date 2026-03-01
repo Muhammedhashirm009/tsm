@@ -19,7 +19,7 @@
     <div class="stat-card" style="border-top:3px solid var(--text-tertiary);">
         <div class="stat-icon" style="background:var(--bg-body);color:var(--text-secondary);"><i data-feather="hash"></i></div>
         <div class="stat-label">Receipts Issued</div>
-        <div class="stat-value">{{ $book->receipts_count }}</div>
+        <div class="stat-value">{{ $totalReceiptsCount }}</div>
     </div>
     <div class="stat-card" style="border-top:3px solid var(--info);">
         <div class="stat-icon" style="background:var(--info-bg);color:var(--info);"><i data-feather="file-text"></i></div>
@@ -45,10 +45,10 @@
     </div>
 </div>
 
-{{-- Receipts Only --}}
+{{-- Income Receipts --}}
 <div class="section animate-in" style="animation-delay:0.12s;">
     <div class="section-header">
-        <h3 class="section-title"><i data-feather="arrow-down-left" style="width:16px;height:16px;color:var(--income);"></i> Receipts ({{ $receipts->count() }})</h3>
+        <h3 class="section-title"><i data-feather="arrow-down-left" style="width:16px;height:16px;color:var(--income);"></i> Income Receipts ({{ $receipts->count() }})</h3>
         <a href="{{ route('receipts.create', ['book_id' => $book->id]) }}" class="btn btn-primary btn-sm"><i data-feather="plus"></i> Add Receipt</a>
     </div>
     <div class="transaction-list" id="receiptsList">
@@ -74,17 +74,50 @@
                 <div class="transaction-amount text-income">+₹{{ number_format($receipt->amount, 2) }}</div>
             </div>
         @empty
-            <div class="text-center text-sm text-tertiary" style="padding:1.5rem;">No receipts in this book yet. Click "Add Receipt" above to get started.</div>
+            <div class="text-center text-sm text-tertiary" style="padding:1rem;">No income receipts in this book.</div>
         @endforelse
     </div>
 </div>
+
+{{-- Mahal Donations --}}
+@if($mahalDonations->count() > 0)
+<div class="section animate-in" style="animation-delay:0.15s;">
+    <div class="section-header">
+        <h3 class="section-title"><i data-feather="heart" style="width:16px;height:16px;color:var(--accent);"></i> Mahal Donations ({{ $mahalDonations->count() }})</h3>
+    </div>
+    <div class="transaction-list" id="donationsList">
+        @foreach($mahalDonations as $donation)
+            <div class="transaction-item" data-search="{{ strtolower(($donation->receipt_no ?? '') . ' ' . ($donation->donor_name ?? '') . ' ' . ($donation->home->home_number ?? '') . ' ' . ($donation->home->owner_name ?? '')) }}">
+                <div class="transaction-icon" style="background:var(--accent-bg);color:var(--accent);"><i data-feather="heart"></i></div>
+                <div class="transaction-details">
+                    <div class="transaction-title flex gap-2 items-center">
+                        {{ $donation->donor_name ?? 'Anonymous' }}
+                        @if($donation->receipt_no)<span class="badge" style="background:var(--income-bg);color:var(--income);font-size:0.6rem;">#{{ $donation->receipt_no }}</span>@endif
+                        <span class="badge" style="background:var(--accent-bg);color:var(--accent);font-size:0.55rem;padding:0.1rem 0.35rem;">Mahal</span>
+                    </div>
+                    <div class="transaction-meta">
+                        <span class="transaction-meta-item"><i data-feather="calendar"></i> {{ $donation->date->format('d M Y') }}</span>
+                        @if($donation->home)<span class="transaction-meta-item"><i data-feather="home"></i> Home #{{ $donation->home->home_number }}</span>@endif
+                        @if($donation->account)<span class="badge badge-{{ $donation->account->type }}" style="font-size:0.55rem;padding:0.1rem 0.35rem;">{{ $donation->account->name }}</span>@endif
+                    </div>
+                    <div class="transaction-meta mt-1" style="font-size:0.68rem;opacity:0.7;">
+                        <span class="transaction-meta-item"><i data-feather="clock"></i> {{ $donation->created_at->format('d M Y h:i A') }}</span>
+                        @if($donation->creator)<span class="transaction-meta-item"><i data-feather="shield"></i> {{ $donation->creator->name }}</span>@endif
+                    </div>
+                </div>
+                <div class="transaction-amount text-income">+₹{{ number_format($donation->amount, 2) }}</div>
+            </div>
+        @endforeach
+    </div>
+</div>
+@endif
 @endsection
 
 @section('scripts')
 <script>
 document.getElementById('bookSearch').addEventListener('input', function() {
     const q = this.value.toLowerCase();
-    document.querySelectorAll('#receiptsList .transaction-item').forEach(function(item) {
+    document.querySelectorAll('#receiptsList .transaction-item, #donationsList .transaction-item').forEach(function(item) {
         item.style.display = (item.getAttribute('data-search') || '').includes(q) ? '' : 'none';
     });
 });

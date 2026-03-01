@@ -84,8 +84,6 @@
                 <select name="payment_method" id="paymentMethod" class="form-control">
                     <option value="Cash" {{ old('payment_method', request('payment_method', 'Cash')) == 'Cash' ? 'selected' : '' }}>Cash</option>
                     <option value="Bank Transfer" {{ old('payment_method', request('payment_method')) == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                    <option value="Cheque" {{ old('payment_method', request('payment_method')) == 'Cheque' ? 'selected' : '' }}>Cheque</option>
-                    <option value="Other" {{ old('payment_method', request('payment_method')) == 'Other' ? 'selected' : '' }}>Other</option>
                 </select>
             </div>
         </div>
@@ -195,12 +193,22 @@ initSearchableSelect('categorySearch', 'categorySelect', 'categoryOptions');
     }
 @endif
 
-// Auto-match payment method when account is selected
-document.getElementById('accountSelect').addEventListener('change', function() {
-    var type = this.options[this.selectedIndex].dataset.type;
+// Auto-select & lock payment method when account is selected
+function syncPaymentMethod() {
+    var acct = document.getElementById('accountSelect');
     var pm = document.getElementById('paymentMethod');
-    if (type === 'cash') pm.value = 'Cash';
-    else if (type === 'bank') pm.value = 'Bank Transfer';
-});
+    var type = acct.options[acct.selectedIndex].dataset.type;
+    if (type === 'cash') {
+        pm.value = 'Cash';
+        pm.querySelectorAll('option').forEach(function(o) { o.disabled = o.value !== 'Cash'; });
+    } else if (type === 'bank') {
+        pm.value = 'Bank Transfer';
+        pm.querySelectorAll('option').forEach(function(o) { o.disabled = o.value !== 'Bank Transfer'; });
+    } else {
+        pm.querySelectorAll('option').forEach(function(o) { o.disabled = false; });
+    }
+}
+document.getElementById('accountSelect').addEventListener('change', syncPaymentMethod);
+syncPaymentMethod(); // run on page load for pre-selected values
 </script>
 @endsection
