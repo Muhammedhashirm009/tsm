@@ -54,6 +54,16 @@
             </nav>
             @endif
 
+            @if(Auth::user()->canViewFinance())
+            <div class="sidebar-section-title">Mahal</div>
+            <nav style="display:flex;flex-direction:column;">
+                <a href="{{ route('mahal.dashboard') }}" class="desktop-nav-item {{ request()->routeIs('mahal.dashboard') ? 'active' : '' }}"><i data-feather="map-pin"></i> Dashboard</a>
+                <a href="{{ route('mahal.homes.index') }}" class="desktop-nav-item {{ request()->routeIs('mahal.homes.*') ? 'active' : '' }}"><i data-feather="home"></i> Homes</a>
+                <a href="{{ route('mahal.donations.index') }}" class="desktop-nav-item {{ request()->routeIs('mahal.donations.*') ? 'active' : '' }}"><i data-feather="heart"></i> Donations</a>
+                <a href="{{ route('mahal.distributions.index') }}" class="desktop-nav-item {{ request()->routeIs('mahal.distributions.*') ? 'active' : '' }}"><i data-feather="gift"></i> Distributions</a>
+            </nav>
+            @endif
+
             @if(Auth::user()->isAdmin())
             <div class="sidebar-section-title">Admin</div>
             <nav style="display:flex;flex-direction:column;">

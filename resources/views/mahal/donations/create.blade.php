@@ -1,10 +1,10 @@
 @extends('layouts.admin')
-@section('title', 'Add Receipt')
+@section('title', 'Add Donation')
 @section('content')
 <div class="page-header animate-in">
     <div class="page-header-left">
-        <h1><i data-feather="plus" style="width:24px;height:24px;color:var(--income);"></i> New Receipt</h1>
-        <p>Record an incoming payment</p>
+        <h1><i data-feather="heart" style="width:24px;height:24px;color:var(--income);"></i> Add Donation</h1>
+        <p>Record a mahal donation</p>
     </div>
 </div>
 
@@ -21,69 +21,67 @@
         </div>
     </div>
 </div>
-<div class="form-card animate-in" style="animation-delay:0.05s;">
-    <form action="{{ route('receipts.store') }}" method="POST" id="receiptForm">@csrf
 
-        {{-- Book selector with search --}}
+<div class="form-card animate-in" style="animation-delay:0.05s;">
+    <form action="{{ route('mahal.donations.store') }}" method="POST">@csrf
         <div class="grid-2">
+            {{-- Book selector with search --}}
             <div class="form-group">
                 <label class="form-label">Book</label>
                 <div class="searchable-select">
                     <input type="text" class="form-control search-input" id="bookSearch" placeholder="Search books..." autocomplete="off">
-                    <select name="book_id" id="bookSelect" class="form-control" required style="display:none;">
-                        <option value="">Select book</option>
+                    <select name="book_id" id="bookSelect" class="form-control" style="display:none;">
+                        <option value="">— No book —</option>
                         @foreach($books as $book)
-                            <option value="{{ $book->id }}" data-label="{{ $book->name }}{{ $book->book_no ? ' (#'.$book->book_no.')' : '' }}" {{ (old('book_id', request('book_id')) == $book->id) ? 'selected' : '' }}>{{ $book->name }}{{ $book->book_no ? ' (#'.$book->book_no.')' : '' }}</option>
+                            <option value="{{ $book->id }}" data-label="{{ $book->name }}{{ $book->book_no ? ' (#'.$book->book_no.')' : '' }}" {{ old('book_id') == $book->id ? 'selected' : '' }}>{{ $book->name }}{{ $book->book_no ? ' (#'.$book->book_no.')' : '' }}</option>
                         @endforeach
                     </select>
                     <div class="search-options" id="bookOptions"></div>
                 </div>
-                @error('book_id')<div class="form-error">{{ $message }}</div>@enderror
             </div>
 
-            {{-- Category selector with search --}}
+            {{-- Home selector with search --}}
             <div class="form-group">
-                <label class="form-label">Category</label>
+                <label class="form-label">Home</label>
                 <div class="searchable-select">
-                    <input type="text" class="form-control search-input" id="categorySearch" placeholder="Search categories..." autocomplete="off">
-                    <select name="category_id" id="categorySelect" class="form-control" required style="display:none;">
-                        <option value="">Select category</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" data-label="{{ $cat->name }}" {{ (old('category_id', request('category_id')) == $cat->id) ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    <input type="text" class="form-control search-input" id="homeSearch" placeholder="Search by home number or owner..." autocomplete="off">
+                    <select name="home_id" id="homeSelect" class="form-control" style="display:none;">
+                        <option value="">— External / No home —</option>
+                        @foreach($homes as $home)
+                            <option value="{{ $home->id }}" data-label="#{{ $home->home_number }} — {{ $home->owner_name }}" data-owner="{{ $home->owner_name }}" {{ old('home_id') == $home->id ? 'selected' : '' }}>#{{ $home->home_number }} — {{ $home->owner_name }}</option>
                         @endforeach
                     </select>
-                    <div class="search-options" id="categoryOptions"></div>
+                    <div class="search-options" id="homeOptions"></div>
                 </div>
-                @error('category_id')<div class="form-error">{{ $message }}</div>@enderror
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Donor Name</label>
+                <input type="text" name="donor_name" id="donorName" class="form-control" placeholder="Auto-filled from home or enter manually" value="{{ old('donor_name') }}">
+            </div>
             <div class="form-group">
                 <label class="form-label">Account</label>
                 <select name="account_id" id="accountSelect" class="form-control">
                     <option value="" data-type="">— No account —</option>
                     @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}" data-type="{{ $acc->type }}" {{ (old('account_id', request('account_id')) == $acc->id) ? 'selected' : '' }}>{{ $acc->name }} ({{ ucfirst($acc->type) }})</option>
+                        <option value="{{ $acc->id }}" data-type="{{ $acc->type }}" {{ old('account_id') == $acc->id ? 'selected' : '' }}>{{ $acc->name }} ({{ ucfirst($acc->type) }})</option>
                     @endforeach
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Amount (₹)</label>
+                <label class="form-label">Amount (₹) *</label>
                 <input type="number" step="0.01" min="0.01" name="amount" class="form-control" placeholder="0.00" required value="{{ old('amount') }}" id="amountField">
                 @error('amount')<div class="form-error">{{ $message }}</div>@enderror
             </div>
             <div class="form-group">
-                <label class="form-label">Date</label>
+                <label class="form-label">Date *</label>
                 <input type="date" name="date" class="form-control" required value="{{ old('date', date('Y-m-d')) }}">
             </div>
             <div class="form-group">
-                <label class="form-label">Received From</label>
-                <input type="text" name="received_from" class="form-control" placeholder="Name of donor / source" value="{{ old('received_from') }}">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Payment Method</label>
+                <label class="form-label">Payment Method *</label>
                 <select name="payment_method" id="paymentMethod" class="form-control">
-                    <option value="Cash" {{ old('payment_method', request('payment_method', 'Cash')) == 'Cash' ? 'selected' : '' }}>Cash</option>
-                    <option value="Bank Transfer" {{ old('payment_method', request('payment_method')) == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                    <option value="Cash" {{ old('payment_method', 'Cash') == 'Cash' ? 'selected' : '' }}>Cash</option>
+                    <option value="Bank Transfer" {{ old('payment_method') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
                 </select>
             </div>
         </div>
@@ -93,10 +91,10 @@
         </div>
         <div class="divider"></div>
         <div class="flex-between" style="flex-wrap:wrap;gap:0.5rem;">
-            <a href="{{ route('receipts.index') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('mahal.donations.index') }}" class="btn btn-secondary">Cancel</a>
             <div style="display:flex;gap:0.5rem;">
                 <button type="submit" name="add_another" value="1" class="btn btn-secondary" style="border-color:var(--income-border);color:var(--income);"><i data-feather="plus"></i> Save & Add Another</button>
-                <button type="submit" class="btn btn-primary"><i data-feather="check"></i> Save Receipt</button>
+                <button type="submit" class="btn btn-primary"><i data-feather="check"></i> Save Donation</button>
             </div>
         </div>
     </form>
@@ -105,7 +103,7 @@
 
 @section('scripts')
 <script>
-// Searchable Select Component
+// Searchable Select Component (same as receipts)
 function initSearchableSelect(searchId, selectId, optionsId, onSelect) {
     const searchEl = document.getElementById(searchId);
     const selectEl = document.getElementById(selectId);
@@ -152,8 +150,8 @@ function initSearchableSelect(searchId, selectId, optionsId, onSelect) {
     searchEl.addEventListener('blur', () => setTimeout(() => optionsEl.style.display = 'none', 150));
 }
 
+// Init book searchable select with receipt number fetch
 initSearchableSelect('bookSearch', 'bookSelect', 'bookOptions', function(bookId) {
-    // Fetch next receipt number when book is selected
     if (!bookId) { document.getElementById('receiptPreview').style.display = 'none'; return; }
     fetch('/books/' + bookId + '/next-receipt')
         .then(r => r.json())
@@ -172,26 +170,15 @@ initSearchableSelect('bookSearch', 'bookSelect', 'bookOptions', function(bookId)
             }
         });
 });
-initSearchableSelect('categorySearch', 'categorySelect', 'categoryOptions');
 
-// Auto-focus amount field for quick entry
-@if(request('book_id'))
-    document.getElementById('amountField').focus();
-    // Trigger receipt number fetch for pre-selected book
-    var preselectedBook = document.getElementById('bookSelect').value;
-    if (preselectedBook) {
-        fetch('/books/' + preselectedBook + '/next-receipt')
-            .then(r => r.json())
-            .then(data => {
-                if (data.next_receipt_no) {
-                    document.getElementById('receiptNo').textContent = '#' + data.next_receipt_no;
-                    document.getElementById('receiptSeries').textContent = data.series ? 'Series: ' + data.series : '';
-                    document.getElementById('receiptPreview').style.display = 'block';
-                    feather.replace();
-                }
-            });
+// Init home searchable select with donor name auto-fill
+initSearchableSelect('homeSearch', 'homeSelect', 'homeOptions', function(homeId) {
+    if (!homeId) return;
+    var selected = document.querySelector('#homeSelect option[value="' + homeId + '"]');
+    if (selected && selected.dataset.owner) {
+        document.getElementById('donorName').value = selected.dataset.owner;
     }
-@endif
+});
 
 // Auto-select & lock payment method when account is selected
 function syncPaymentMethod() {

@@ -11,6 +11,10 @@ use App\Http\Controllers\DebtController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CreditorController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MahalDashboardController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MahalDonationController;
+use App\Http\Controllers\DistributionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,17 +41,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Books — all except collector can view, only editors can modify
     Route::get('/books/{book}/next-receipt', [BookController::class, 'nextReceipt'])->name('books.nextReceipt');
 
-    Route::middleware('role:admin,secretary,joint_secretary,president')->group(function () {
-        Route::get('/books', [BookController::class, 'index'])->name('books.index');
-        Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
-    });
-
     Route::middleware('role:admin,secretary,joint_secretary')->group(function () {
         Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
         Route::post('/books', [BookController::class, 'store'])->name('books.store');
         Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
         Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
         Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+    });
+
+    Route::middleware('role:admin,secretary,joint_secretary,president')->group(function () {
+        Route::get('/books', [BookController::class, 'index'])->name('books.index');
+        Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
     });
 
     // ── Finance section (all except collector) ──
@@ -101,6 +105,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Categories
         Route::resource('categories', CategoryController::class)->except(['show']);
+    });
+
+    // ── Mahal Management ──
+    Route::prefix('mahal')->middleware('role:admin,secretary,joint_secretary,president')->group(function () {
+        Route::get('/', [MahalDashboardController::class, 'index'])->name('mahal.dashboard');
+
+        // Homes
+        Route::resource('homes', HomeController::class, ['as' => 'mahal']);
+        Route::post('homes/{home}/toggle-active', [HomeController::class, 'toggleActive'])->name('mahal.homes.toggleActive');
+
+        // Donations
+        Route::resource('donations', MahalDonationController::class, ['as' => 'mahal'])->only(['index', 'create', 'store', 'destroy']);
+
+        // Distributions
+        Route::resource('distributions', DistributionController::class, ['as' => 'mahal'])->only(['index', 'create', 'store', 'show']);
+        Route::post('distributions/{record}/toggle-token', [DistributionController::class, 'toggleTokenGiven'])->name('mahal.distributions.toggleToken');
+        Route::post('distributions/{record}/toggle-collected', [DistributionController::class, 'toggleCollected'])->name('mahal.distributions.toggleCollected');
+        Route::post('distributions/{distribution}/update-status', [DistributionController::class, 'updateStatus'])->name('mahal.distributions.updateStatus');
     });
 
     // ── Admin-only: User Management ──
