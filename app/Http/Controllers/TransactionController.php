@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Receipt;
 use App\Models\Voucher;
+use App\Models\MahalDonation;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Account;
@@ -19,11 +20,13 @@ class TransactionController extends Controller
 
         $receiptsQuery = Receipt::with(['book', 'category', 'account', 'creator']);
         $vouchersQuery = Voucher::with(['book', 'category', 'account', 'creator']);
+        $donationsQuery = MahalDonation::with(['book', 'home', 'account', 'category', 'creator']);
 
         // Filters
         if ($request->filled('book_id')) {
             $receiptsQuery->where('book_id', $request->book_id);
             $vouchersQuery->where('book_id', $request->book_id);
+            $donationsQuery->where('book_id', $request->book_id);
         }
         if ($request->filled('category_id')) {
             $receiptsQuery->where('category_id', $request->category_id);
@@ -32,20 +35,24 @@ class TransactionController extends Controller
         if ($request->filled('account_id')) {
             $receiptsQuery->where('account_id', $request->account_id);
             $vouchersQuery->where('account_id', $request->account_id);
+            $donationsQuery->where('account_id', $request->account_id);
         }
         if ($request->filled('date_from')) {
             $receiptsQuery->where('date', '>=', $request->date_from);
             $vouchersQuery->where('date', '>=', $request->date_from);
+            $donationsQuery->where('date', '>=', $request->date_from);
         }
         if ($request->filled('date_to')) {
             $receiptsQuery->where('date', '<=', $request->date_to);
             $vouchersQuery->where('date', '<=', $request->date_to);
+            $donationsQuery->where('date', '<=', $request->date_to);
         }
 
         $typeFilter = $request->get('type', 'all');
 
         $receipts = ($typeFilter === 'all' || $typeFilter === 'income') ? $receiptsQuery->get() : collect();
         $vouchers = ($typeFilter === 'all' || $typeFilter === 'expense') ? $vouchersQuery->get() : collect();
+        $donations = ($typeFilter === 'all' || $typeFilter === 'income') ? $donationsQuery->get() : collect();
 
         // Merge into a single collection with type markers
         $transactions = collect();
@@ -83,10 +90,27 @@ class TransactionController extends Controller
                 'created_at' => $v->created_at,
             ]);
         }
+        foreach ($donations as $d) {
+            $transactions->push((object)[
+                'id' => $d->id,
+                'type' => 'donation',
+                'ref_no' => $d->receipt_no,
+                'amount' => $d->amount,
+                'date' => $d->date,
+                'category_name' => $d->category->name ?? 'Mahal Donation',
+                'book_name' => $d->book->name ?? '—',
+                'person' => $d->donor_name ?? ($d->home ? 'Home #' . $d->home->home_number : '—'),
+                'account' => $d->account,
+                'payment_method' => $d->payment_method,
+                'description' => $d->description,
+                'creator_name' => $d->creator->name ?? null,
+                'created_at' => $d->created_at,
+            ]);
+        }
 
         $transactions = $transactions->sortByDesc('date')->values();
 
-        $totalIncome = $receipts->sum('amount');
+        $totalIncome = $receipts->sum('amount') + $donations->sum('amount');
         $totalExpense = $vouchers->sum('amount');
 
         return view('transactions.index', compact(

@@ -6,6 +6,7 @@ use App\Models\MahalDonation;
 use App\Models\Home;
 use App\Models\Book;
 use App\Models\Account;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +14,7 @@ class MahalDonationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MahalDonation::with(['home', 'book', 'account', 'creator']);
+        $query = MahalDonation::with(['home', 'book', 'account', 'category', 'creator']);
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -40,7 +41,8 @@ class MahalDonationController extends Controller
         $homes = Home::active()->orderBy('home_number')->get();
         $books = Book::all();
         $accounts = Account::all();
-        return view('mahal.donations.create', compact('homes', 'books', 'accounts'));
+        $categories = Category::where('type', 'income')->get();
+        return view('mahal.donations.create', compact('homes', 'books', 'accounts', 'categories'));
     }
 
     public function store(Request $request)
@@ -48,11 +50,12 @@ class MahalDonationController extends Controller
         $validated = $request->validate([
             'book_id' => 'nullable|exists:books,id',
             'account_id' => 'nullable|exists:accounts,id',
+            'category_id' => 'nullable|exists:categories,id',
             'home_id' => 'nullable|exists:homes,id',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01|max:99999999',
             'date' => 'required|date',
             'donor_name' => 'nullable|string|max:255',
-            'payment_method' => 'required|string|max:50',
+            'payment_method' => 'required|string|in:Cash,Bank Transfer',
             'description' => 'nullable|string|max:500',
         ]);
 
@@ -73,7 +76,11 @@ class MahalDonationController extends Controller
         MahalDonation::create($validated);
 
         if ($request->has('add_another')) {
-            return redirect()->route('mahal.donations.create')->with('success', 'Donation of ₹' . number_format($validated['amount'], 2) . ' recorded! Add another.');
+            return redirect()->route('mahal.donations.create', [
+                'book_id' => $validated['book_id'] ?? null,
+                'account_id' => $validated['account_id'] ?? null,
+                'category_id' => $validated['category_id'] ?? null,
+            ])->with('success', 'Donation of ₹' . number_format($validated['amount'], 2) . ' recorded! Add another.');
         }
 
         return redirect()->route('mahal.donations.index')->with('success', 'Donation recorded successfully.');

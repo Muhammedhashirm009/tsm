@@ -52,6 +52,20 @@ class UserController extends Controller
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+
+        // Prevent admin from demoting themselves
+        if ($user->id === auth()->id() && $validated['role'] !== $user->role) {
+            return back()->with('error', 'You cannot change your own role.');
+        }
+
+        // Prevent demoting the last admin
+        if ($user->role === 'admin' && $validated['role'] !== 'admin') {
+            $adminCount = User::where('role', 'admin')->count();
+            if ($adminCount <= 1) {
+                return back()->with('error', 'Cannot demote the last admin.');
+            }
+        }
+
         $user->role = $validated['role'];
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
@@ -65,6 +79,10 @@ class UserController extends Controller
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete yourself.');
+        }
+        // Prevent deleting the last admin
+        if ($user->role === 'admin' && User::where('role', 'admin')->count() <= 1) {
+            return back()->with('error', 'Cannot delete the last admin.');
         }
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted.');

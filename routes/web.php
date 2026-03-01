@@ -108,20 +108,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // ── Mahal Management ──
-    Route::prefix('mahal')->middleware('role:admin,secretary,joint_secretary,president')->group(function () {
+    // Collector-accessible: view dashboard, homes list, add donations, view distributions + toggle
+    Route::prefix('mahal')->middleware('role:admin,secretary,joint_secretary,president,collector')->group(function () {
         Route::get('/', [MahalDashboardController::class, 'index'])->name('mahal.dashboard');
 
-        // Homes
-        Route::resource('homes', HomeController::class, ['as' => 'mahal']);
-        Route::post('homes/{home}/toggle-active', [HomeController::class, 'toggleActive'])->name('mahal.homes.toggleActive');
+        // Homes — view only for collectors
+        Route::get('homes', [HomeController::class, 'index'])->name('mahal.homes.index');
+        Route::get('homes/{home}', [HomeController::class, 'show'])->name('mahal.homes.show');
 
-        // Donations
-        Route::resource('donations', MahalDonationController::class, ['as' => 'mahal'])->only(['index', 'create', 'store', 'destroy']);
+        // Donations — collectors can list, create, store
+        Route::get('donations', [MahalDonationController::class, 'index'])->name('mahal.donations.index');
+        Route::get('donations/create', [MahalDonationController::class, 'create'])->name('mahal.donations.create');
+        Route::post('donations', [MahalDonationController::class, 'store'])->name('mahal.donations.store');
 
-        // Distributions
-        Route::resource('distributions', DistributionController::class, ['as' => 'mahal'])->only(['index', 'create', 'store', 'show']);
+        // Distributions — view + toggle token/collected
+        Route::get('distributions', [DistributionController::class, 'index'])->name('mahal.distributions.index');
+        Route::get('distributions/{distribution}', [DistributionController::class, 'show'])->name('mahal.distributions.show');
         Route::post('distributions/{record}/toggle-token', [DistributionController::class, 'toggleTokenGiven'])->name('mahal.distributions.toggleToken');
         Route::post('distributions/{record}/toggle-collected', [DistributionController::class, 'toggleCollected'])->name('mahal.distributions.toggleCollected');
+    });
+
+    // Editor-only mahal actions
+    Route::prefix('mahal')->middleware('role:admin,secretary,joint_secretary')->group(function () {
+        // Homes — create, edit, delete, toggle
+        Route::get('homes/create', [HomeController::class, 'create'])->name('mahal.homes.create');
+        Route::post('homes', [HomeController::class, 'store'])->name('mahal.homes.store');
+        Route::get('homes/{home}/edit', [HomeController::class, 'edit'])->name('mahal.homes.edit');
+        Route::put('homes/{home}', [HomeController::class, 'update'])->name('mahal.homes.update');
+        Route::delete('homes/{home}', [HomeController::class, 'destroy'])->name('mahal.homes.destroy');
+        Route::post('homes/{home}/toggle-active', [HomeController::class, 'toggleActive'])->name('mahal.homes.toggleActive');
+
+        // Donations — delete only for editors
+        Route::delete('donations/{donation}', [MahalDonationController::class, 'destroy'])->name('mahal.donations.destroy');
+
+        // Distributions — create + status change
+        Route::get('distributions/create', [DistributionController::class, 'create'])->name('mahal.distributions.create');
+        Route::post('distributions', [DistributionController::class, 'store'])->name('mahal.distributions.store');
         Route::post('distributions/{distribution}/update-status', [DistributionController::class, 'updateStatus'])->name('mahal.distributions.updateStatus');
     });
 

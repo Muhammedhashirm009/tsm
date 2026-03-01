@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MahalDonation extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
-        'book_id', 'receipt_no', 'account_id', 'home_id', 'amount', 'date', 'donor_name',
+        'book_id', 'receipt_no', 'account_id', 'category_id', 'home_id', 'amount', 'date', 'donor_name',
         'payment_method', 'description', 'created_by',
     ];
 
@@ -24,6 +27,11 @@ class MahalDonation extends Model
     public function account()
     {
         return $this->belongsTo(\App\Models\Account::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(\App\Models\Category::class);
     }
 
     public function home()

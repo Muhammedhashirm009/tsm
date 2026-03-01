@@ -31,11 +31,11 @@ class ReceiptController extends Controller
             'book_id' => 'required|exists:books,id',
             'category_id' => 'required|exists:categories,id',
             'account_id' => 'nullable|exists:accounts,id',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01|max:99999999',
             'date' => 'required|date',
             'received_from' => 'nullable|string|max:255',
-            'payment_method' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'payment_method' => 'nullable|string|in:Cash,Bank Transfer',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         // Auto-generate receipt number from book
@@ -72,11 +72,11 @@ class ReceiptController extends Controller
             'book_id' => 'required|exists:books,id',
             'category_id' => 'required|exists:categories,id',
             'account_id' => 'nullable|exists:accounts,id',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0.01|max:99999999',
             'date' => 'required|date',
             'received_from' => 'nullable|string|max:255',
-            'payment_method' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'payment_method' => 'nullable|string|in:Cash,Bank Transfer',
+            'description' => 'nullable|string|max:1000',
         ]);
         $receipt->update($validated);
         return redirect()->route('receipts.index')->with('success', 'Receipt updated.');

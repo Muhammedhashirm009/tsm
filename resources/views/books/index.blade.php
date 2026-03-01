@@ -23,7 +23,7 @@
                     @if($book->receipt_prefix)
                         <span>Receipt: {{ $book->receipt_prefix }}{{ str_pad($book->receipt_start_no, 4, '0', STR_PAD_LEFT) }}@if($book->receipt_end_no) → {{ $book->receipt_prefix }}{{ str_pad($book->receipt_end_no, 4, '0', STR_PAD_LEFT) }}@endif</span>
                     @endif
-                    <span class="text-income">{{ $book->receipts_count ?? 0 }} receipts</span>
+                    <span class="text-income">{{ ($book->receipts_count ?? 0) + ($book->mahal_donations_count ?? 0) }} receipts</span>
                     <span class="text-expense">{{ $book->vouchers_count ?? 0 }} vouchers</span>
                 </div>
                 @if($book->receipt_current_no > 0)

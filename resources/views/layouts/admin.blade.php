@@ -54,7 +54,7 @@
             </nav>
             @endif
 
-            @if(Auth::user()->canViewFinance())
+            @if(Auth::user()->canViewFinance() || Auth::user()->role === 'collector')
             <div class="sidebar-section-title">Mahal</div>
             <nav style="display:flex;flex-direction:column;">
                 <a href="{{ route('mahal.dashboard') }}" class="desktop-nav-item {{ request()->routeIs('mahal.dashboard') ? 'active' : '' }}"><i data-feather="map-pin"></i> Dashboard</a>
@@ -104,8 +104,72 @@
             <a href="{{ route('transactions.index') }}" class="nav-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}"><i data-feather="list"></i><span>All</span></a>
             <a href="{{ route('receipts.index') }}" class="nav-item {{ request()->routeIs('receipts.*') ? 'active' : '' }}"><i data-feather="arrow-down-left"></i><span>Income</span></a>
             <a href="{{ route('vouchers.index') }}" class="nav-item {{ request()->routeIs('vouchers.*') ? 'active' : '' }}"><i data-feather="arrow-up-right"></i><span>Expense</span></a>
-            <a href="{{ route('books.index') }}" class="nav-item {{ request()->routeIs('books.*') ? 'active' : '' }}"><i data-feather="book-open"></i><span>Books</span></a>
+            <button type="button" class="nav-item" id="mobileMenuBtn" onclick="document.getElementById('mobileSidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open');"><i data-feather="menu"></i><span>Menu</span></button>
         </nav>
+
+        {{-- Mobile Slide Sidebar --}}
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="document.getElementById('mobileSidebar').classList.remove('open');this.classList.remove('open');"></div>
+        <aside class="mobile-sidebar" id="mobileSidebar">
+            <div class="mobile-sidebar-header">
+                <div style="display:flex;align-items:center;gap:0.65rem;">
+                    <div class="sidebar-brand-icon" style="width:34px;height:34px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i data-feather="moon" style="width:17px;height:17px;"></i></div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.95rem;">Masjid Finance</div>
+                        <div style="font-size:0.6rem;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Accounting</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-icon" onclick="document.getElementById('mobileSidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');" style="color:var(--text-tertiary);"><i data-feather="x" style="width:18px;height:18px;"></i></button>
+            </div>
+
+            <div class="mobile-sidebar-body">
+                <div class="sidebar-section-title" style="margin-top:0;">Transactions</div>
+                <a href="{{ route('dashboard') }}" class="mobile-sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}"><i data-feather="home"></i> Dashboard</a>
+                @if(Auth::user()->canViewFinance())
+                <a href="{{ route('transactions.index') }}" class="mobile-sidebar-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}"><i data-feather="list"></i> All Transactions</a>
+                @endif
+                <a href="{{ route('receipts.index') }}" class="mobile-sidebar-item {{ request()->routeIs('receipts.*') ? 'active' : '' }}"><i data-feather="arrow-down-left"></i> Income</a>
+                @if(Auth::user()->canViewFinance())
+                <a href="{{ route('vouchers.index') }}" class="mobile-sidebar-item {{ request()->routeIs('vouchers.*') ? 'active' : '' }}"><i data-feather="arrow-up-right"></i> Expense</a>
+                @endif
+
+                @if(Auth::user()->canViewFinance())
+                <div class="sidebar-section-title">Finance</div>
+                <a href="{{ route('accounts.index') }}" class="mobile-sidebar-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}"><i data-feather="credit-card"></i> Accounts</a>
+                <a href="{{ route('debts.index') }}" class="mobile-sidebar-item {{ request()->routeIs('debts.*') ? 'active' : '' }}"><i data-feather="repeat"></i> Debts</a>
+                <a href="{{ route('creditors.index') }}" class="mobile-sidebar-item {{ request()->routeIs('creditors.*') ? 'active' : '' }}"><i data-feather="users"></i> Creditors</a>
+
+                <div class="sidebar-section-title">Setup</div>
+                <a href="{{ route('books.index') }}" class="mobile-sidebar-item {{ request()->routeIs('books.*') ? 'active' : '' }}"><i data-feather="book-open"></i> Books</a>
+                @if(Auth::user()->canEdit())
+                <a href="{{ route('categories.index') }}" class="mobile-sidebar-item {{ request()->routeIs('categories.*') ? 'active' : '' }}"><i data-feather="grid"></i> Categories</a>
+                @endif
+                @endif
+
+                @if(Auth::user()->canViewFinance() || Auth::user()->role === 'collector')
+                <div class="sidebar-section-title">Mahal</div>
+                <a href="{{ route('mahal.dashboard') }}" class="mobile-sidebar-item {{ request()->routeIs('mahal.dashboard') ? 'active' : '' }}"><i data-feather="map-pin"></i> Dashboard</a>
+                <a href="{{ route('mahal.homes.index') }}" class="mobile-sidebar-item {{ request()->routeIs('mahal.homes.*') ? 'active' : '' }}"><i data-feather="home"></i> Homes</a>
+                <a href="{{ route('mahal.donations.index') }}" class="mobile-sidebar-item {{ request()->routeIs('mahal.donations.*') ? 'active' : '' }}"><i data-feather="heart"></i> Donations</a>
+                <a href="{{ route('mahal.distributions.index') }}" class="mobile-sidebar-item {{ request()->routeIs('mahal.distributions.*') ? 'active' : '' }}"><i data-feather="gift"></i> Distributions</a>
+                @endif
+
+                @if(Auth::user()->isAdmin())
+                <div class="sidebar-section-title">Admin</div>
+                <a href="{{ route('users.index') }}" class="mobile-sidebar-item {{ request()->routeIs('users.*') ? 'active' : '' }}"><i data-feather="shield"></i> Users</a>
+                @endif
+            </div>
+
+            <div class="mobile-sidebar-footer">
+                <div style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem;background:var(--bg-body);border-radius:var(--radius-md);margin-bottom:0.65rem;">
+                    <div style="width:28px;height:28px;border-radius:var(--radius-sm);background:var(--accent-bg);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i data-feather="user" style="width:13px;height:13px;"></i></div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:600;font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ Auth::user()->name }}</div>
+                        <div style="font-size:0.6rem;color:var(--text-tertiary);">{{ Auth::user()->role_label }}</div>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="btn btn-secondary w-full"><i data-feather="log-out"></i> Sign Out</button></form>
+            </div>
+        </aside>
     </div>
     <script>feather.replace();</script>
     @yield('scripts')

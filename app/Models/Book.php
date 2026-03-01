@@ -18,6 +18,11 @@ class Book extends Model
         return $this->hasMany(Voucher::class);
     }
 
+    public function mahalDonations()
+    {
+        return $this->hasMany(MahalDonation::class);
+    }
+
     public function getNextReceiptNoAttribute()
     {
         $nextNum = $this->receipt_current_no > 0

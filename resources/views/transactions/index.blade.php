@@ -76,14 +76,14 @@
 <div class="transaction-list animate-in" style="animation-delay:0.12s;" id="txnList">
     @forelse($transactions as $txn)
         <div class="transaction-item" data-search="{{ strtolower(($txn->ref_no ?? '') . ' ' . $txn->category_name . ' ' . $txn->book_name . ' ' . ($txn->person ?? '') . ' ' . ($txn->description ?? '')) }}">
-            <div class="transaction-icon {{ $txn->type }}">
-                <i data-feather="{{ $txn->type == 'income' ? 'arrow-down-left' : 'arrow-up-right' }}"></i>
+            <div class="transaction-icon {{ $txn->type == 'expense' ? 'expense' : 'income' }}">
+                <i data-feather="{{ $txn->type == 'donation' ? 'heart' : ($txn->type == 'income' ? 'arrow-down-left' : 'arrow-up-right') }}"></i>
             </div>
             <div class="transaction-details">
                 <div class="transaction-title flex gap-2 items-center">
                     {{ $txn->category_name }}
                     @if($txn->ref_no)
-                        <span class="badge" style="background:{{ $txn->type == 'income' ? 'var(--income-bg)' : 'var(--expense-bg)' }};color:{{ $txn->type == 'income' ? 'var(--income)' : 'var(--expense)' }};font-size:0.6rem;">#{{ $txn->ref_no }}</span>
+                        <span class="badge" style="background:{{ $txn->type == 'expense' ? 'var(--expense-bg)' : 'var(--income-bg)' }};color:{{ $txn->type == 'expense' ? 'var(--expense)' : 'var(--income)' }};font-size:0.6rem;">#{{ $txn->ref_no }}</span>
                     @endif
                     <span class="badge badge-{{ $txn->type }}">{{ ucfirst($txn->type) }}</span>
                 </div>
@@ -99,8 +99,8 @@
                     @if($txn->payment_method)<span class="transaction-meta-item"><i data-feather="credit-card"></i> {{ $txn->payment_method }}</span>@endif
                 </div>
             </div>
-            <div class="transaction-amount {{ $txn->type == 'income' ? 'text-income' : 'text-expense' }}">
-                {{ $txn->type == 'income' ? '+' : '−' }}₹{{ number_format($txn->amount, 2) }}
+            <div class="transaction-amount {{ $txn->type == 'expense' ? 'text-expense' : 'text-income' }}">
+                {{ $txn->type == 'expense' ? '−' : '+' }}₹{{ number_format($txn->amount, 2) }}
             </div>
         </div>
     @empty

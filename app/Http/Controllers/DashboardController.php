@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\Receipt;
 use App\Models\Voucher;
 use App\Models\Debt;
+use App\Models\MahalDonation;
 
 class DashboardController extends Controller
 {
@@ -22,9 +23,13 @@ class DashboardController extends Controller
                                 ->latest()
                                 ->take(10)
                                 ->get();
-                                
-            $myTotalCollected = Receipt::where('created_by', $user->id)->sum('amount');
+
+            $myTotalCollected = Receipt::where('created_by', $user->id)->sum('amount')
+                              + MahalDonation::where('created_by', $user->id)->sum('amount');
             $myTodayCollected = Receipt::where('created_by', $user->id)
+                                    ->whereDate('created_at', \Carbon\Carbon::today())
+                                    ->sum('amount')
+                              + MahalDonation::where('created_by', $user->id)
                                     ->whereDate('created_at', \Carbon\Carbon::today())
                                     ->sum('amount');
 
@@ -32,7 +37,7 @@ class DashboardController extends Controller
         }
 
         // Full view for Admins, Secretaries, Presidents
-        $totalIncome = Receipt::sum('amount');
+        $totalIncome = Receipt::sum('amount') + MahalDonation::sum('amount');
         $totalExpense = Voucher::sum('amount');
         $balance = $totalIncome - $totalExpense;
 

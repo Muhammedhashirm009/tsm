@@ -27,39 +27,41 @@
 <div class="card mb-3 animate-in" style="padding:0.75rem;">
     <div style="display:flex;align-items:center;gap:0.5rem;">
         <i data-feather="search" style="width:16px;height:16px;color:var(--text-tertiary);flex-shrink:0;"></i>
-        <input type="text" id="donationSearch" class="form-control" style="border:none;background:transparent;box-shadow:none;padding:0.3rem;" placeholder="Search by donor, home, description...">
+        <input type="text" id="donationSearch" class="form-control" style="border:none;background:transparent;box-shadow:none;padding:0.3rem;font-size:0.9rem;" placeholder="Search donor, home #, book..." inputmode="search">
     </div>
 </div>
 
 <div class="transaction-list animate-in" style="animation-delay:0.05s;" id="donationList">
     @forelse($donations as $donation)
-        <div class="transaction-item" data-search="{{ strtolower(($donation->donor_name ?? '') . ' ' . ($donation->home->home_number ?? '') . ' ' . ($donation->home->owner_name ?? '') . ' ' . ($donation->description ?? '') . ' ' . ($donation->payment_method ?? '') . ' ' . ($donation->book->name ?? '') . ' ' . ($donation->receipt_no ?? '')) }}">
+        <div class="transaction-item donation-card" data-search="{{ strtolower(($donation->donor_name ?? '') . ' ' . ($donation->home->home_number ?? '') . ' ' . ($donation->home->owner_name ?? '') . ' ' . ($donation->description ?? '') . ' ' . ($donation->payment_method ?? '') . ' ' . ($donation->book->name ?? '') . ' ' . ($donation->receipt_no ?? '')) }}">
             <div class="transaction-icon income"><i data-feather="heart"></i></div>
             <div class="transaction-details">
-                <div class="transaction-title flex gap-2 items-center">
-                    {{ $donation->donor_name ?? 'Anonymous' }}
-                    @if($donation->receipt_no)<span class="badge" style="background:var(--income-bg);color:var(--income);font-size:0.6rem;">#{{ $donation->receipt_no }}</span>@endif
+                <div class="transaction-title" style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0.25rem;">
+                        <span style="font-weight:600;">{{ $donation->donor_name ?? 'Anonymous' }}</span>
+                        @if($donation->receipt_no)<span class="badge" style="background:var(--income-bg);color:var(--income);font-size:0.55rem;">#{{ $donation->receipt_no }}</span>@endif
+                        @if($donation->home)<span class="badge" style="background:var(--accent-bg);color:var(--accent);font-size:0.55rem;">#{{ $donation->home->home_number }}</span>@endif
+                    </div>
+                    <span class="transaction-amount text-income" style="white-space:nowrap;font-weight:700;font-size:0.95rem;">+₹{{ number_format($donation->amount, 2) }}</span>
                 </div>
-                <div class="transaction-meta">
+                <div class="transaction-meta" style="margin-top:0.25rem;">
                     <span class="transaction-meta-item"><i data-feather="calendar"></i> {{ $donation->date->format('d M Y') }}</span>
                     <span class="transaction-meta-item"><i data-feather="credit-card"></i> {{ $donation->payment_method }}</span>
                     @if($donation->book)<span class="transaction-meta-item"><i data-feather="book-open"></i> {{ $donation->book->name }}</span>@endif
-                    @if($donation->home)<span class="badge" style="background:var(--accent-bg);color:var(--accent);font-size:0.55rem;padding:0.1rem 0.35rem;">Home #{{ $donation->home->home_number }}</span>@endif
-                    @if($donation->account)<span class="badge badge-{{ $donation->account->type }}" style="font-size:0.55rem;padding:0.1rem 0.35rem;">{{ $donation->account->name }}</span>@endif
+                    @if($donation->account)<span class="badge badge-{{ $donation->account->type }}" style="font-size:0.5rem;padding:0.1rem 0.3rem;">{{ $donation->account->name }}</span>@endif
                 </div>
                 @if($donation->description)
                 <div class="transaction-meta mt-1" style="font-size:0.68rem;opacity:0.7;">
                     <span class="transaction-meta-item">{{ $donation->description }}</span>
                 </div>
                 @endif
-                <div class="transaction-meta mt-1" style="font-size:0.68rem;opacity:0.7;">
-                    <span class="transaction-meta-item"><i data-feather="clock"></i> {{ $donation->created_at->format('d M Y h:i A') }}</span>
+                <div class="transaction-meta mt-1" style="font-size:0.65rem;opacity:0.6;">
+                    <span class="transaction-meta-item"><i data-feather="clock"></i> {{ $donation->created_at->format('d M h:i A') }}</span>
                     @if($donation->creator)<span class="transaction-meta-item"><i data-feather="shield"></i> {{ $donation->creator->name }}</span>@endif
                 </div>
             </div>
-            <div class="transaction-amount text-income">+₹{{ number_format($donation->amount, 2) }}</div>
             @if(Auth::user()->canEdit())
-            <div class="transaction-actions">
+            <div class="transaction-actions" style="align-self:flex-start;">
                 <form action="{{ route('mahal.donations.destroy', $donation) }}" method="POST" onsubmit="return confirm('Delete this donation?');">@csrf @method('DELETE')
                     <button type="submit" class="btn btn-ghost btn-icon" style="color:var(--expense);"><i data-feather="trash-2" style="width:15px;height:15px;"></i></button>
                 </form>
@@ -76,6 +78,10 @@
             </div>
         </div>
     @endforelse
+</div>
+
+<div class="text-center text-sm text-tertiary mt-3 animate-in">
+    {{ $donations->count() }} donation{{ $donations->count() !== 1 ? 's' : '' }}
 </div>
 @endsection
 
