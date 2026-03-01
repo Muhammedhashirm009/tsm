@@ -1,59 +1,145 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+  <h1 align="center">Masjid Financial Management System (TSM)</h1>
+  <p align="center">
+    A comprehensive, secure, and intuitive web application designed specifically for managing the financial operations of a Masjid.
+    <br />
+    <br />
+    <a href="#key-features"><strong>Explore the features »</strong></a>
+    <br />
+    <br />
+    <a href="#installation">Installation</a>
+    ·
+    <a href="#deployment">Deployment</a>
+    ·
+    <a href="#tech-stack">Tech Stack</a>
+  </p>
+</div>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<details open>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#tech-stack">Tech Stack</a></li>
+      </ul>
+    </li>
+    <li><a href="#key-features">Key Features</a></li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#deployment">Deployment</a></li>
+    <li><a href="#role-based-access-control-rbac">Role-Based Access Control</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
-## About Laravel
+## About The Project
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The **Masjid Financial Management System** is a full-featured Laravel application tailored to meet the specific accounting and administrative needs of a Masjid. It streamlines complex financial workflows, including donations, vouchers, receipts, debt management, and general bookkeeping.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+With an emphasis on transparency, security, and ease of use, the platform offers a robust Role-Based Access Control (RBAC) system to ensure that committee members—from the President to Collectors—have precise access to the tools they need.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Tech Stack
 
-## Learning Laravel
+* **Framework:** [Laravel 12](https://laravel.com/) (PHP 8.2+)
+* **Frontend:** [Blade Templates](https://laravel.com/docs/blade) & [Tailwind CSS](https://tailwindcss.com/)
+* **Database:** MySQL / SQLite
+* **Authentication & Authorization:** Laravel Breeze & [Spatie Permission](https://spatie.be/docs/laravel-permission)
+* **Assets:** [Vite](https://vitejs.dev/)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Key Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* 📊 **Financial Dashboard:** Get a real-time overview of the Masjid's financial health, recent transactions, and account balances.
+* 💵 **Transaction Management:** Seamlessly manage Receipts (Income) and Vouchers (Expenses) with categorized bookkeeping.
+* 📖 **Book & Account Tracking:** Organize funds into specific accounts and books for precise financial categorization and numbering.
+* ❤️ **Mahal Donations:** Dedicated module for tracking and managing Mahal donations with robust reporting and soft-delete capabilities.
+* 🤝 **Debt Management:** Keep track of debts and loans with easy-to-use interfaces.
+* 🔐 **Advanced RBAC:** Secure access with granular permissions for distinct roles (Admin, Secretary, Joint Secretary, President, Collector).
+* 📱 **Responsive Design:** A polished, modern UI that works flawlessly on desktop and mobile devices.
 
-## Laravel Sponsors
+## Getting Started
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-### Premium Partners
+### Prerequisites
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+* PHP >= 8.2
+* Composer
+* Node.js & npm
+* MySQL or SQLite
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Muhammedhashirm009/tsm.git
+   cd tsm
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install NPM packages and build assets**
+   ```bash
+   npm install
+   npm run build
+   ```
+
+4. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   *Configure your database credentials in the `.env` file.*
+
+5. **Run Migrations & Seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Start the local development server**
+   ```bash
+   php artisan serve
+   ```
+   *The application will be available at `http://localhost:8000`.*
+
+## Deployment
+
+This application includes an automated deployment script tailored for **Hostinger** (or similar cPanel/SSH environments).
+
+1. Upload your files to the server.
+2. Execute the included deployment script via SSH from the project root:
+   ```bash
+   bash deploy_hostinger.sh
+   ```
+   This script automates setting file permissions, installing Composer dependencies, optimizing Laravel caches, running migrations, and creating the storage symlink.
+
+## Role-Based Access Control (RBAC)
+
+The system is pre-configured with the following roles, each possessing specific capabilities to maintain operational security and data integrity:
+
+*   **Admin:** Full system access, including User Management and Role assignment.
+*   **President:** High-level overview and approval capabilities.
+*   **Secretary:** Comprehensive access to financial records and reporting.
+*   **Joint Secretary:** Assisting access rights, supporting the Secretary's duties.
+*   **Collector:** Restricted access focused strictly on data entry for collections and donations.
+
+*Note: Public registration is disabled by default to maintain strict access control. New users must be manually added by an Administrator.*
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+If you are a part of the development team, please create feature branches and submit pull requests for review before merging into `main`. Ensure all tests pass and follow the established coding standards.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is proprietary and confidential. Unauthorized copying, distribution, or modification of this project is strictly prohibited unless explicitly authorized by the project owners.
+
+---
+<p align="center">Developed with ❤️ for the community.</p>
